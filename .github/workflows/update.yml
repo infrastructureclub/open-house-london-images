@@ -1,0 +1,33 @@
+name: Update open house images
+on: 
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Scrape and commit
+        run: |
+          pip install -r requirements.txt
+          python -u fetch-openhouse-images.py
+
+          git add images
+
+          git config --global user.email "bot@jonty.co.uk"
+          git config --global user.name "OH London update GHA"
+
+          # || true means this won't error when there's nothing to commit
+          git commit -m "Automatic OH London data update" || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
