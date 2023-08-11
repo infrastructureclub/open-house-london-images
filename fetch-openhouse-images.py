@@ -6,7 +6,7 @@ import urllib
 
 from github import Github
 
-year = 2022
+year = 2023
 
 g = Github(os.environ["GITHUB_TOKEN"])
 repo = g.get_repo("jonty/open-house-london-data")
